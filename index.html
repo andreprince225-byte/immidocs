@@ -44,12 +44,7 @@ nav{background:var(--white);border-bottom:3px solid var(--red);padding:0 2rem;di
 .trust-check{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:8px;color:rgba(255,255,255,0.8)}
 .trust-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.2)}
 .main{max-width:700px;margin:0 auto;padding:1.5rem 1.5rem 3rem}
-.api-bar{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:1rem}
-.status-dot{width:8px;height:8px;border-radius:50%;background:#CBD5E0;flex-shrink:0;transition:background 0.3s}
-.status-dot.live{background:var(--success)}
-.api-label{font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-muted);white-space:nowrap}
-.api-bar input{flex:1;border:none;outline:none;font-size:13px;font-family:'Courier New',monospace;color:var(--text-primary);background:transparent;min-width:0}
-.api-bar input::placeholder{color:#CBD5E0}
+
 .doc-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem}
 .doc-btn{padding:12px 8px;background:var(--white);border:1px solid var(--border);border-radius:8px;cursor:pointer;text-align:center;transition:all 0.15s;font-family:'Source Sans 3',sans-serif}
 .doc-btn:hover{border-color:var(--navy);background:var(--navy-xlight)}
@@ -166,12 +161,6 @@ footer a{color:rgba(255,255,255,0.55);text-decoration:none}
   <div class="upgrade-banner" id="upgradeBanner">
     <div class="upgrade-text"><strong>You've used all 3 free documents.</strong> Upgrade for unlimited access at $12/month.</div>
     <a class="upgrade-cta" href="#">Upgrade now →</a>
-  </div>
-
-  <div class="api-bar">
-    <div class="status-dot" id="sDot"></div>
-    <span class="api-label">API key</span>
-    <input type="password" id="apiKey" placeholder="sk-ant-api03-..." oninput="checkKey()"/>
   </div>
 
   <div class="doc-selector">
@@ -376,11 +365,6 @@ function validate(i,d){
   return d.name&&d.emp&&d.role;
 }
 
-function checkKey(){
-  const k=document.getElementById('apiKey').value.trim();
-  document.getElementById('sDot').className='status-dot'+(k.startsWith('sk-ant-')?' live':'');
-}
-
 function switchDoc(i){
   document.getElementById('form'+cur).style.display='none';
   document.getElementById('form'+i).style.display='block';
@@ -391,10 +375,9 @@ function switchDoc(i){
 }
 
 async function generate(i){
-  const apiKey=document.getElementById('apiKey').value.trim();
   const d=getData(i);
   const errEl=document.getElementById('e'+i);
-  if(!apiKey||!validate(i,d)){errEl.classList.add('show');return;}
+  if(!validate(i,d)){errEl.classList.add('show');return;}
   errEl.classList.remove('show');
   if(used>=3){document.getElementById('upgradeBanner').classList.add('show');return;}
   document.getElementById('outputCard').className='output-card';
@@ -404,7 +387,7 @@ async function generate(i){
   let si=0;
   const iv=setInterval(()=>{si=(si+1)%steps.length;document.getElementById('loadTxt').textContent=steps[si][0];document.getElementById('loadStep').textContent=steps[si][1];},2500);
   try{
-    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({apiKey,prompt:prompts[i](d)})});
+    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompts[i](d)})});
     const data=await res.json();
     clearInterval(iv);
     if(data.error)throw new Error(data.error);
