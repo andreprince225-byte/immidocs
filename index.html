@@ -30,9 +30,7 @@ nav{background:var(--white);border-bottom:3px solid var(--red);padding:0 2rem;di
 .logo-text{font-family:'Libre Baskerville',serif;font-size:20px;color:var(--navy)}
 .logo-text span{color:var(--red)}
 .nav-right{display:flex;align-items:center;gap:14px}
-.free-pill{font-size:11px;font-weight:600;background:var(--gold-light);color:var(--gold);padding:4px 10px;border-radius:20px;border:1px solid rgba(184,134,11,0.25);letter-spacing:0.04em;text-transform:uppercase}
-.credits-indicator{font-size:12px;color:var(--text-secondary)}
-.credits-indicator strong{color:var(--navy)}
+.preview-pill{font-size:11px;font-weight:600;background:var(--gold-light);color:var(--gold);padding:4px 10px;border-radius:20px;border:1px solid rgba(184,134,11,0.25);letter-spacing:0.04em;text-transform:uppercase}
 .hero{background:var(--navy);padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--red)}
 .hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:0.75rem}
@@ -44,7 +42,6 @@ nav{background:var(--white);border-bottom:3px solid var(--red);padding:0 2rem;di
 .trust-check{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:8px;color:rgba(255,255,255,0.8)}
 .trust-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.2)}
 .main{max-width:700px;margin:0 auto;padding:1.5rem 1.5rem 3rem}
-
 .doc-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem}
 .doc-btn{padding:12px 8px;background:var(--white);border:1px solid var(--border);border-radius:8px;cursor:pointer;text-align:center;transition:all 0.15s;font-family:'Source Sans 3',sans-serif}
 .doc-btn:hover{border-color:var(--navy);background:var(--navy-xlight)}
@@ -82,6 +79,8 @@ nav{background:var(--white);border-bottom:3px solid var(--red);padding:0 2rem;di
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-text{font-size:14px;color:var(--text-secondary)}
 .loading-step{font-size:11px;color:var(--text-muted);margin-top:2px}
+
+/* Output card */
 .output-card{background:var(--white);border:1px solid var(--border);border-radius:10px;margin-top:1rem;overflow:hidden;display:none}
 .output-card.show{display:block}
 .output-header{background:var(--success-bg);border-bottom:1px solid rgba(26,107,60,0.15);padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
@@ -93,8 +92,32 @@ nav{background:var(--white);border-bottom:3px solid var(--red);padding:0 2rem;di
 .output-meta{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:16px;flex-wrap:wrap}
 .meta-item{font-size:11px;color:var(--text-muted)}
 .meta-item strong{color:var(--text-secondary);font-weight:600}
-.output-body{padding:20px}
-.output-text{font-family:'Libre Baskerville',serif;font-size:13px;line-height:1.85;color:var(--text-primary);white-space:pre-wrap}
+.output-body{padding:20px;position:relative}
+
+/* Preview text — visible */
+.preview-text{font-family:'Libre Baskerville',serif;font-size:13px;line-height:1.85;color:var(--text-primary);white-space:pre-wrap}
+
+/* Blurred section */
+.blurred-wrap{position:relative;margin-top:0}
+.blurred-text{font-family:'Libre Baskerville',serif;font-size:13px;line-height:1.85;color:var(--text-primary);white-space:pre-wrap;filter:blur(5px);user-select:none;pointer-events:none;opacity:0.7}
+.unlock-overlay{position:absolute;bottom:0;left:0;right:0;top:30%;background:linear-gradient(to bottom,rgba(247,246,243,0) 0%,rgba(247,246,243,0.97) 40%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:24px;gap:12px}
+.unlock-title{font-family:'Libre Baskerville',serif;font-size:17px;font-weight:700;color:var(--navy);text-align:center}
+.unlock-sub{font-size:12px;color:var(--text-secondary);text-align:center;max-width:320px;line-height:1.5}
+.unlock-prices{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.price-btn{display:flex;flex-direction:column;align-items:center;padding:12px 20px;border-radius:8px;cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif;transition:all 0.15s;text-decoration:none;min-width:140px}
+.price-btn-single{background:var(--white);border:2px solid var(--border-med);color:var(--navy)}
+.price-btn-single:hover{border-color:var(--navy);background:var(--navy-xlight)}
+.price-btn-bundle{background:var(--navy);color:white}
+.price-btn-bundle:hover{background:var(--navy-light)}
+.price-btn-amount{font-size:22px;font-weight:600;line-height:1}
+.price-btn-label{font-size:11px;margin-top:4px;opacity:0.75}
+.price-btn-badge{font-size:10px;font-weight:600;background:var(--red);color:white;padding:2px 8px;border-radius:10px;margin-top:4px}
+.unlock-note{font-size:10px;color:var(--text-muted);text-align:center}
+
+/* Full document (after unlock) */
+.output-text{font-family:'Libre Baskerville',serif;font-size:13px;line-height:1.85;color:var(--text-primary);white-space:pre-wrap;display:none}
+.output-text.unlocked{display:block}
+
 .feedback-row{padding:12px 16px;border-top:1px solid var(--border);background:var(--off-white);display:flex;align-items:center;justify-content:space-between}
 .feedback-label{font-size:12px;color:var(--text-muted)}
 .feedback-btns{display:flex;gap:6px}
@@ -102,11 +125,6 @@ nav{background:var(--white);border-bottom:3px solid var(--red);padding:0 2rem;di
 .fb-btn:hover{background:var(--navy-xlight);border-color:var(--navy)}
 .fb-btn.good{background:var(--success-bg);border-color:var(--success)}
 .fb-btn.bad{background:var(--red-light);border-color:var(--red)}
-.upgrade-banner{background:var(--navy);border-radius:8px;padding:14px 16px;margin-bottom:1rem;display:none;align-items:center;justify-content:space-between;gap:12px}
-.upgrade-banner.show{display:flex}
-.upgrade-text{font-size:13px;color:rgba(255,255,255,0.8)}
-.upgrade-text strong{color:white}
-.upgrade-cta{font-size:12px;font-weight:600;background:var(--red);color:white;border:none;padding:7px 14px;border-radius:5px;cursor:pointer;font-family:'Source Sans 3',sans-serif;white-space:nowrap;text-decoration:none}
 .disclaimer{font-size:11px;color:var(--text-muted);margin-top:1.5rem;line-height:1.7;padding:12px 16px;background:var(--white);border:1px solid var(--border);border-radius:8px;border-left:3px solid var(--gold)}
 footer{background:var(--navy);padding:1.25rem 2rem;text-align:center}
 footer p{font-size:11px;color:rgba(255,255,255,0.4)}
@@ -118,6 +136,7 @@ footer a{color:rgba(255,255,255,0.55);text-decoration:none}
   .doc-selector{grid-template-columns:1fr}
   .hero h1{font-size:22px}
   .trust-dot{display:none}
+  .unlock-prices{flex-direction:column;align-items:center}
 }
 </style>
 </head>
@@ -136,8 +155,7 @@ footer a{color:rgba(255,255,255,0.55);text-decoration:none}
     <span class="logo-text">Immi<span>Docs</span>.ai</span>
   </div>
   <div class="nav-right">
-    <span class="free-pill">3 free docs</span>
-    <span class="credits-indicator">Used: <strong id="cUsed">0</strong>/3</span>
+    <span class="preview-pill">Preview free</span>
   </div>
 </nav>
 
@@ -146,9 +164,9 @@ footer a{color:rgba(255,255,255,0.55);text-decoration:none}
   <h1>Professional IRCC documents,<br><em>drafted in seconds</em></h1>
   <p class="hero-sub">Generate polished, properly structured immigration letters — the kind consultants charge $150–500 to write.</p>
   <div class="trust-row">
-    <div class="trust-item"><div class="trust-check">✓</div>No signup required</div>
+    <div class="trust-item"><div class="trust-check">✓</div>Preview for free</div>
     <div class="trust-dot"></div>
-    <div class="trust-item"><div class="trust-check">✓</div>First 3 documents free</div>
+    <div class="trust-item"><div class="trust-check">✓</div>Unlock full doc for $24.99</div>
     <div class="trust-dot"></div>
     <div class="trust-item"><div class="trust-check">✓</div>IRCC-ready format</div>
     <div class="trust-dot"></div>
@@ -157,11 +175,6 @@ footer a{color:rgba(255,255,255,0.55);text-decoration:none}
 </div>
 
 <div class="main">
-
-  <div class="upgrade-banner" id="upgradeBanner">
-    <div class="upgrade-text"><strong>You've used all 3 free documents.</strong> Upgrade for unlimited access at $12/month.</div>
-    <a class="upgrade-cta" href="#">Upgrade now →</a>
-  </div>
 
   <div class="doc-selector">
     <button class="doc-btn active" onclick="switchDoc(0)">
@@ -219,8 +232,8 @@ footer a{color:rgba(255,255,255,0.55);text-decoration:none}
         </div>
       </div>
     </div>
-    <div class="error-bar" id="e0">⚠ Please enter your full name, describe your situation, and add your API key above.</div>
-    <button class="generate-btn" onclick="generate(0)"><span>Generate Letter of Explanation</span><span class="btn-arrow">→</span></button>
+    <div class="error-bar" id="e0">⚠ Please enter your full name and describe your situation.</div>
+    <button class="generate-btn" onclick="generate(0)"><span>Preview my document — free</span><span class="btn-arrow">→</span></button>
   </div>
 
   <!-- Study Permit Form -->
@@ -253,7 +266,7 @@ footer a{color:rgba(255,255,255,0.55);text-decoration:none}
       </div>
     </div>
     <div class="error-bar" id="e1">⚠ Please enter your name, institution, and reason for studying in Canada.</div>
-    <button class="generate-btn" onclick="generate(1)"><span>Generate Study Permit Cover Letter</span><span class="btn-arrow">→</span></button>
+    <button class="generate-btn" onclick="generate(1)"><span>Preview my document — free</span><span class="btn-arrow">→</span></button>
   </div>
 
   <!-- Work Permit Form -->
@@ -292,7 +305,7 @@ footer a{color:rgba(255,255,255,0.55);text-decoration:none}
       </div>
     </div>
     <div class="error-bar" id="e2">⚠ Please enter your name, employer details, and role description.</div>
-    <button class="generate-btn" onclick="generate(2)"><span>Generate Work Permit Cover Letter</span><span class="btn-arrow">→</span></button>
+    <button class="generate-btn" onclick="generate(2)"><span>Preview my document — free</span><span class="btn-arrow">→</span></button>
   </div>
 
   <div class="loading-bar" id="loadingBar">
@@ -303,11 +316,12 @@ footer a{color:rgba(255,255,255,0.55);text-decoration:none}
     </div>
   </div>
 
+  <!-- Output card with blur/unlock -->
   <div class="output-card" id="outputCard">
     <div class="output-header">
-      <div class="output-status"><div class="check-circle">✓</div>Document ready</div>
+      <div class="output-status"><div class="check-circle">✓</div><span id="outputStatusText">Preview ready</span></div>
       <div class="output-actions">
-        <button class="action-btn" id="copyBtn" onclick="copyDoc()">Copy</button>
+        <button class="action-btn" id="copyBtn" onclick="copyDoc()" style="display:none">Copy full document</button>
       </div>
     </div>
     <div class="output-meta">
@@ -315,10 +329,37 @@ footer a{color:rgba(255,255,255,0.55);text-decoration:none}
       <span class="meta-item">Province: <strong id="metaProv">—</strong></span>
       <span class="meta-item">Generated: <strong id="metaDate">—</strong></span>
     </div>
-    <div class="output-body">
+    <div class="output-body" id="outputBody">
+
+      <!-- Preview: first paragraph visible -->
+      <div class="preview-text" id="previewText"></div>
+
+      <!-- Rest: blurred with unlock overlay -->
+      <div class="blurred-wrap" id="blurredWrap">
+        <div class="blurred-text" id="blurredText"></div>
+        <div class="unlock-overlay" id="unlockOverlay">
+          <div class="unlock-title">Your document is ready</div>
+          <div class="unlock-sub">Unlock the full professionally formatted letter — still 10x cheaper than any immigration consultant.</div>
+          <div class="unlock-prices">
+            <a class="price-btn price-btn-single" id="singleBtn" href="https://immidocs.lemonsqueezy.com/checkout/buy/282a78fe-eba5-4905-b1d7-fa85219cc936" target="_blank">
+              <span class="price-btn-amount">$24.99</span>
+              <span class="price-btn-label">1 document</span>
+            </a>
+            <a class="price-btn price-btn-bundle" id="bundleBtn" href="https://immidocs.lemonsqueezy.com/checkout/buy/e9313396-c64f-4b2f-8fa5-7db4a89f17e1" target="_blank">
+              <span class="price-btn-amount">$59.99</span>
+              <span class="price-btn-label">3 document bundle</span>
+              <span class="price-btn-badge">Save $15</span>
+            </a>
+          </div>
+          <div class="unlock-note">Secure payment via Lemon Squeezy · Instant delivery after purchase</div>
+        </div>
+      </div>
+
+      <!-- Full document shown after unlock -->
       <div class="output-text" id="outText"></div>
+
     </div>
-    <div class="feedback-row">
+    <div class="feedback-row" id="feedbackRow" style="display:none">
       <span class="feedback-label">Was this document helpful?</span>
       <div class="feedback-btns">
         <button class="fb-btn" id="fbGood" onclick="feedback(true)">👍 Yes</button>
@@ -339,9 +380,7 @@ footer a{color:rgba(255,255,255,0.55);text-decoration:none}
 
 <script>
 let cur=0;
-let used=parseInt(localStorage.getItem('imd_used')||'0');
-document.getElementById('cUsed').textContent=used;
-if(used>=3)document.getElementById('upgradeBanner').classList.add('show');
+let fullDoc='';
 
 const docLabels=['Letter of Explanation','Study Permit Cover Letter','Work Permit Cover Letter'];
 
@@ -374,46 +413,65 @@ function switchDoc(i){
   cur=i;
 }
 
+function splitPreview(text){
+  const paragraphs=text.split('\n\n');
+  const previewParas=paragraphs.slice(0,2).join('\n\n');
+  const restParas=paragraphs.slice(2).join('\n\n');
+  return{preview:previewParas,rest:restParas};
+}
+
 async function generate(i){
   const d=getData(i);
   const errEl=document.getElementById('e'+i);
   if(!validate(i,d)){errEl.classList.add('show');return;}
   errEl.classList.remove('show');
-  if(used>=3){document.getElementById('upgradeBanner').classList.add('show');return;}
+
   document.getElementById('outputCard').className='output-card';
   document.getElementById('loadingBar').className='loading-bar show';
+  document.getElementById('outText').className='output-text';
+  document.getElementById('copyBtn').style.display='none';
+  document.getElementById('feedbackRow').style.display='none';
   document.querySelectorAll('.generate-btn').forEach(b=>b.disabled=true);
+
   const steps=[['Drafting your document...','Structuring opening paragraphs'],['Writing body sections...','Applying IRCC formatting standards'],['Reviewing for completeness...','Checking compliance language'],['Finalising document...','Adding formal closing and signature block']];
   let si=0;
   const iv=setInterval(()=>{si=(si+1)%steps.length;document.getElementById('loadTxt').textContent=steps[si][0];document.getElementById('loadStep').textContent=steps[si][1];},2500);
+
   try{
     const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompts[i](d)})});
     const data=await res.json();
     clearInterval(iv);
     if(data.error)throw new Error(data.error);
-    document.getElementById('outText').textContent=data.text;
+
+    fullDoc=data.text;
+    const{preview,rest}=splitPreview(fullDoc);
+
+    document.getElementById('previewText').textContent=preview;
+    document.getElementById('blurredText').textContent=rest;
+    document.getElementById('blurredWrap').style.display='block';
+    document.getElementById('unlockOverlay').style.display='flex';
     document.getElementById('metaType').textContent=docLabels[i];
     document.getElementById('metaProv').textContent=d.prov||'—';
     document.getElementById('metaDate').textContent=new Date().toLocaleDateString('en-CA');
+    document.getElementById('outputStatusText').textContent='Preview ready — unlock full document';
     document.getElementById('outputCard').className='output-card show';
     document.getElementById('loadingBar').className='loading-bar';
-    used++;localStorage.setItem('imd_used',used);
-    document.getElementById('cUsed').textContent=used;
-    if(used>=3)document.getElementById('upgradeBanner').classList.add('show');
-    document.getElementById('fbGood').className='fb-btn';
-    document.getElementById('fbBad').className='fb-btn';
+
   }catch(err){
     clearInterval(iv);
     document.getElementById('loadingBar').className='loading-bar';
-    document.getElementById('outText').textContent='Error: '+err.message;
+    document.getElementById('previewText').textContent='Error: '+err.message;
+    document.getElementById('blurredWrap').style.display='none';
     document.getElementById('outputCard').className='output-card show';
   }
   document.querySelectorAll('.generate-btn').forEach(b=>b.disabled=false);
 }
 
 function copyDoc(){
-  navigator.clipboard.writeText(document.getElementById('outText').textContent).then(()=>{
-    const b=document.getElementById('copyBtn');b.textContent='Copied!';setTimeout(()=>b.textContent='Copy',2000);
+  navigator.clipboard.writeText(fullDoc).then(()=>{
+    const b=document.getElementById('copyBtn');
+    b.textContent='Copied!';
+    setTimeout(()=>b.textContent='Copy full document',2000);
   });
 }
 
