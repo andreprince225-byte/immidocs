@@ -112,7 +112,15 @@ nav{background:var(--white);border-bottom:3px solid var(--red);padding:0 2rem;di
 .price-btn-amount{font-size:22px;font-weight:600;line-height:1}
 .price-btn-label{font-size:11px;margin-top:4px;opacity:0.75}
 .price-btn-badge{font-size:10px;font-weight:600;background:var(--red);color:white;padding:2px 8px;border-radius:10px;margin-top:4px}
-.unlock-note{font-size:10px;color:var(--text-muted);text-align:center}
+.unlock-divider{font-size:11px;color:var(--text-muted);margin-top:4px}
+.unlock-code-row{display:flex;gap:8px;align-items:center;justify-content:center}
+.unlock-code-row input{font-family:'Courier New',monospace;font-size:14px;padding:8px 12px;border:1px solid var(--border-med);border-radius:6px;outline:none;width:180px;text-align:center;letter-spacing:0.1em;color:var(--navy)}
+.unlock-code-row input:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(26,43,74,0.08)}
+.unlock-code-row button{padding:8px 16px;background:var(--navy);color:white;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Source Sans 3',sans-serif;transition:background 0.15s}
+.unlock-code-row button:hover{background:var(--navy-light)}
+.unlock-code-error{font-size:11px;color:var(--red);display:none}
+.unlock-code-error.show{display:block}
+.unlock-success-header{background:var(--success-bg);border-bottom:1px solid rgba(26,107,60,0.15);padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
 
 /* Full document (after unlock) */
 .output-text{font-family:'Libre Baskerville',serif;font-size:13px;line-height:1.85;color:var(--text-primary);white-space:pre-wrap;display:none}
@@ -341,17 +349,23 @@ footer a{color:rgba(255,255,255,0.55);text-decoration:none}
           <div class="unlock-title">Your document is ready</div>
           <div class="unlock-sub">Unlock the full professionally formatted letter — still 10x cheaper than any immigration consultant.</div>
           <div class="unlock-prices">
-            <a class="price-btn price-btn-single" id="singleBtn" href="https://immidocs.lemonsqueezy.com/checkout/buy/282a78fe-eba5-4905-b1d7-fa85219cc936" target="_blank">
+            <a class="price-btn price-btn-single" id="singleBtn" href="https://immidocs.lemonsqueezy.com/checkout/buy/282a78fe-eba5-4905-b1d7-fa85219cc936" target="_blank" onclick="saveDoc()">
               <span class="price-btn-amount">$24.99</span>
               <span class="price-btn-label">1 document</span>
             </a>
-            <a class="price-btn price-btn-bundle" id="bundleBtn" href="https://immidocs.lemonsqueezy.com/checkout/buy/e9313396-c64f-4b2f-8fa5-7db4a89f17e1" target="_blank">
+            <a class="price-btn price-btn-bundle" id="bundleBtn" href="https://immidocs.lemonsqueezy.com/checkout/buy/e9313396-c64f-4b2f-8fa5-7db4a89f17e1" target="_blank" onclick="saveDoc()">
               <span class="price-btn-amount">$59.99</span>
               <span class="price-btn-label">3 document bundle</span>
               <span class="price-btn-badge">Save $15</span>
             </a>
           </div>
-          <div class="unlock-note">Secure payment via Lemon Squeezy · Instant delivery after purchase</div>
+          <div class="unlock-divider">— or enter your unlock code —</div>
+          <div class="unlock-code-row">
+            <input type="text" id="unlockInput" placeholder="IMMI-XXXX-XXXX" oninput="this.value=this.value.toUpperCase()"/>
+            <button onclick="tryUnlock()">Unlock</button>
+          </div>
+          <div class="unlock-code-error" id="unlockError">Invalid code. Please check your purchase confirmation email.</div>
+          <div class="unlock-note">Secure payment via Lemon Squeezy · Unlock code sent instantly after purchase</div>
         </div>
       </div>
 
@@ -466,6 +480,68 @@ async function generate(i){
   }
   document.querySelectorAll('.generate-btn').forEach(b=>b.disabled=false);
 }
+
+function saveDoc(){
+  if(fullDoc) sessionStorage.setItem('immidocs_pending',fullDoc);
+}
+
+function tryUnlock(){
+  const code=document.getElementById('unlockInput').value.trim().toUpperCase();
+  const errEl=document.getElementById('unlockError');
+  const btn=document.querySelector('.unlock-code-row button');
+  if(!code){errEl.textContent='Please enter your unlock code.';errEl.classList.add('show');return;}
+  btn.textContent='Checking...';
+  btn.disabled=true;
+  fetch('/api/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})})
+    .then(r=>r.json())
+    .then(data=>{
+      btn.textContent='Unlock';
+      btn.disabled=false;
+      if(data.valid){
+        revealFullDoc();
+        errEl.classList.remove('show');
+        if(data.product_type==='bundle'&&data.remaining>0){
+          const note=document.createElement('div');
+          note.style='font-size:12px;color:var(--success);text-align:center;margin-top:8px;padding:8px';
+          note.textContent=`Bundle: ${data.remaining} document${data.remaining===1?'':'s'} remaining`;
+          document.getElementById('outputBody').appendChild(note);
+        }
+      } else {
+        errEl.textContent=data.reason==='Code already used'?'This code has already been used.':data.reason==='Bundle limit reached (3/3 documents used)'?'Your bundle limit of 3 documents has been reached.':'Invalid code. Please check your purchase confirmation email.';
+        errEl.classList.add('show');
+      }
+    })
+    .catch(()=>{
+      btn.textContent='Unlock';
+      btn.disabled=false;
+      errEl.textContent='Network error. Please try again.';
+      errEl.classList.add('show');
+    });
+}
+
+function revealFullDoc(){
+  document.getElementById('blurredWrap').style.display='none';
+  document.getElementById('outText').textContent=fullDoc;
+  document.getElementById('outText').className='output-text unlocked';
+  document.getElementById('outputStatusText').textContent='Full document unlocked';
+  document.getElementById('copyBtn').style.display='inline-block';
+  document.getElementById('feedbackRow').style.display='flex';
+  document.querySelector('.output-header').style.background='var(--success-bg)';
+}
+
+window.addEventListener('load',()=>{
+  const pending=sessionStorage.getItem('immidocs_pending');
+  const params=new URLSearchParams(window.location.search);
+  if(params.get('unlocked')==='true'&&pending){
+    fullDoc=pending;
+    sessionStorage.removeItem('immidocs_pending');
+    document.getElementById('previewText').textContent='';
+    revealFullDoc();
+    document.getElementById('outputCard').className='output-card show';
+    document.getElementById('metaDate').textContent=new Date().toLocaleDateString('en-CA');
+    document.getElementById('outputStatusText').textContent='Full document unlocked';
+  }
+});
 
 function copyDoc(){
   navigator.clipboard.writeText(fullDoc).then(()=>{
