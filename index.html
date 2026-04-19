@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ImmiDocs.ai — Canadian Immigration Document Assistant</title>
+<meta name="description" content="Generate professional IRCC-ready immigration documents in seconds. Letters of Explanation, Study Permit and Work Permit cover letters."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1A2B4A;--navy-light:#243860;--navy-xlight:#EEF1F6;
+  --red:#CC0000;--red-light:#FFF0F0;
+  --gold:#B8860B;--gold-light:#FFF8E7;
+  --white:#FFFFFF;--off-white:#F7F6F3;
+  --border:rgba(26,43,74,0.12);--border-med:rgba(26,43,74,0.22);
+  --text-primary:#1A2B4A;--text-secondary:#4A5568;--text-muted:#718096;
+  --success:#1A6B3C;--success-bg:#F0FAF4;
+}
+body{font-family:'Source Sans 3',sans-serif;background:var(--off-white);color:var(--text-primary);min-height:100vh}
+.gov-bar{background:var(--navy);padding:6px 2rem;display:flex;align-items:center;gap:10px}
+.gov-bar-text{font-size:11px;color:rgba(255,255,255,0.65);letter-spacing:0.03em}
+.gov-bar-text strong{color:white;font-weight:500}
+.maple{width:16px;height:16px;fill:var(--red)}
+nav{background:var(--white);border-bottom:3px solid var(--red);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo-wrap{display:flex;align-items:center;gap:12px}
+.logo-icon{width:36px;height:36px;background:var(--navy);border-radius:6px;display:flex;align-items:center;justify-content:center}
+.logo-icon svg{width:20px;height:20px;fill:white}
+.logo-text{font-family:'Libre Baskerville',serif;font-size:20px;color:var(--navy)}
+.logo-text span{color:var(--red)}
+.nav-right{display:flex;align-items:center;gap:14px}
+.free-pill{font-size:11px;font-weight:600;background:var(--gold-light);color:var(--gold);padding:4px 10px;border-radius:20px;border:1px solid rgba(184,134,11,0.25);letter-spacing:0.04em;text-transform:uppercase}
+.credits-indicator{font-size:12px;color:var(--text-secondary)}
+.credits-indicator strong{color:var(--navy)}
+.hero{background:var(--navy);padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--red)}
+.hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:0.75rem}
+.hero h1{font-family:'Libre Baskerville',serif;font-size:28px;font-weight:400;color:white;line-height:1.3;margin-bottom:0.75rem}
+.hero h1 em{font-style:italic;color:rgba(255,255,255,0.7)}
+.hero-sub{font-size:14px;color:rgba(255,255,255,0.55);max-width:460px;margin:0 auto 1.25rem;line-height:1.6}
+.trust-row{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+.trust-item{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,0.5)}
+.trust-check{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:8px;color:rgba(255,255,255,0.8)}
+.trust-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.2)}
+.main{max-width:700px;margin:0 auto;padding:1.5rem 1.5rem 3rem}
+.api-bar{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#CBD5E0;flex-shrink:0;transition:background 0.3s}
+.status-dot.live{background:var(--success)}
+.api-label{font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-muted);white-space:nowrap}
+.api-bar input{flex:1;border:none;outline:none;font-size:13px;font-family:'Courier New',monospace;color:var(--text-primary);background:transparent;min-width:0}
+.api-bar input::placeholder{color:#CBD5E0}
+.doc-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem}
+.doc-btn{padding:12px 8px;background:var(--white);border:1px solid var(--border);border-radius:8px;cursor:pointer;text-align:center;transition:all 0.15s;font-family:'Source Sans 3',sans-serif}
+.doc-btn:hover{border-color:var(--navy);background:var(--navy-xlight)}
+.doc-btn.active{background:var(--navy);border-color:var(--navy)}
+.doc-btn-icon{font-size:18px;margin-bottom:4px;display:block}
+.doc-btn-label{font-size:11px;font-weight:600;color:var(--text-secondary);display:block;line-height:1.3}
+.doc-btn.active .doc-btn-label{color:white}
+.doc-btn-sub{font-size:10px;color:var(--text-muted);display:block;margin-top:2px}
+.doc-btn.active .doc-btn-sub{color:rgba(255,255,255,0.55)}
+.form-card{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:1rem}
+.form-card-header{background:var(--navy-xlight);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:8px}
+.fch-dot{width:3px;height:16px;background:var(--navy);border-radius:2px}
+.fch-title{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--navy)}
+.form-body{padding:16px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg.full{grid-column:1/-1}
+.fg label{font-size:11px;font-weight:600;letter-spacing:0.04em;color:var(--text-secondary);text-transform:uppercase}
+.fg input,.fg select,.fg textarea{font-family:'Source Sans 3',sans-serif;font-size:14px;padding:8px 11px;border:1px solid var(--border-med);border-radius:6px;color:var(--text-primary);background:var(--white);outline:none;transition:border-color 0.15s,box-shadow 0.15s;width:100%}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(26,43,74,0.08)}
+.fg textarea{resize:vertical;min-height:82px;line-height:1.55}
+.fg input::placeholder,.fg textarea::placeholder{color:#B0BAC9;font-style:italic}
+.section-divider{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);grid-column:1/-1;padding-top:4px;border-top:1px solid var(--border);margin-top:4px}
+.generate-btn{width:100%;padding:14px;background:var(--red);color:white;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Source Sans 3',sans-serif;letter-spacing:0.02em;transition:background 0.15s,transform 0.1s;display:flex;align-items:center;justify-content:center;gap:8px}
+.generate-btn:hover{background:#A80000}
+.generate-btn:active{transform:scale(0.995)}
+.generate-btn:disabled{background:#CBD5E0;color:#718096;cursor:not-allowed;transform:none}
+.btn-arrow{font-size:16px;transition:transform 0.15s}
+.generate-btn:hover .btn-arrow{transform:translateX(3px)}
+.error-bar{font-size:13px;color:var(--red);background:var(--red-light);border:1px solid rgba(204,0,0,0.2);padding:9px 13px;border-radius:6px;margin-top:8px;display:none;align-items:center;gap:8px}
+.error-bar.show{display:flex}
+.loading-bar{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:1rem;display:none;align-items:center;gap:14px}
+.loading-bar.show{display:flex}
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin 0.75s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;color:var(--text-secondary)}
+.loading-step{font-size:11px;color:var(--text-muted);margin-top:2px}
+.output-card{background:var(--white);border:1px solid var(--border);border-radius:10px;margin-top:1rem;overflow:hidden;display:none}
+.output-card.show{display:block}
+.output-header{background:var(--success-bg);border-bottom:1px solid rgba(26,107,60,0.15);padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
+.output-status{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--success);letter-spacing:0.04em;text-transform:uppercase}
+.check-circle{width:18px;height:18px;border-radius:50%;background:var(--success);display:flex;align-items:center;justify-content:center;font-size:10px;color:white}
+.output-actions{display:flex;gap:6px}
+.action-btn{font-size:12px;padding:5px 12px;border:1px solid var(--border-med);border-radius:5px;background:white;color:var(--text-secondary);cursor:pointer;font-family:'Source Sans 3',sans-serif;font-weight:500;transition:all 0.15s}
+.action-btn:hover{background:var(--navy-xlight);border-color:var(--navy);color:var(--navy)}
+.output-meta{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:16px;flex-wrap:wrap}
+.meta-item{font-size:11px;color:var(--text-muted)}
+.meta-item strong{color:var(--text-secondary);font-weight:600}
+.output-body{padding:20px}
+.output-text{font-family:'Libre Baskerville',serif;font-size:13px;line-height:1.85;color:var(--text-primary);white-space:pre-wrap}
+.feedback-row{padding:12px 16px;border-top:1px solid var(--border);background:var(--off-white);display:flex;align-items:center;justify-content:space-between}
+.feedback-label{font-size:12px;color:var(--text-muted)}
+.feedback-btns{display:flex;gap:6px}
+.fb-btn{padding:4px 12px;border:1px solid var(--border-med);border-radius:4px;background:white;font-size:13px;cursor:pointer;transition:all 0.15s;font-family:'Source Sans 3',sans-serif}
+.fb-btn:hover{background:var(--navy-xlight);border-color:var(--navy)}
+.fb-btn.good{background:var(--success-bg);border-color:var(--success)}
+.fb-btn.bad{background:var(--red-light);border-color:var(--red)}
+.upgrade-banner{background:var(--navy);border-radius:8px;padding:14px 16px;margin-bottom:1rem;display:none;align-items:center;justify-content:space-between;gap:12px}
+.upgrade-banner.show{display:flex}
+.upgrade-text{font-size:13px;color:rgba(255,255,255,0.8)}
+.upgrade-text strong{color:white}
+.upgrade-cta{font-size:12px;font-weight:600;background:var(--red);color:white;border:none;padding:7px 14px;border-radius:5px;cursor:pointer;font-family:'Source Sans 3',sans-serif;white-space:nowrap;text-decoration:none}
+.disclaimer{font-size:11px;color:var(--text-muted);margin-top:1.5rem;line-height:1.7;padding:12px 16px;background:var(--white);border:1px solid var(--border);border-radius:8px;border-left:3px solid var(--gold)}
+footer{background:var(--navy);padding:1.25rem 2rem;text-align:center}
+footer p{font-size:11px;color:rgba(255,255,255,0.4)}
+footer a{color:rgba(255,255,255,0.55);text-decoration:none}
+@media(max-width:600px){
+  .form-grid{grid-template-columns:1fr}
+  .fg.full{grid-column:1}
+  .section-divider{grid-column:1}
+  .doc-selector{grid-template-columns:1fr}
+  .hero h1{font-size:22px}
+  .trust-dot{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="gov-bar">
+  <svg class="maple" viewBox="0 0 100 100"><path d="M50 5 L57 35 L88 28 L72 50 L95 58 L75 65 L80 90 L50 78 L20 90 L25 65 L5 58 L28 50 L12 28 L43 35 Z"/></svg>
+  <span class="gov-bar-text"><strong>ImmiDocs</strong> — Canadian Immigration Document Assistant &nbsp;·&nbsp; Not affiliated with IRCC or the Government of Canada</span>
+</div>
+
+<nav>
+  <div class="logo-wrap">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+    </div>
+    <span class="logo-text">Immi<span>Docs</span>.ai</span>
+  </div>
+  <div class="nav-right">
+    <span class="free-pill">3 free docs</span>
+    <span class="credits-indicator">Used: <strong id="cUsed">0</strong>/3</span>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Canadian immigration assistant</div>
+  <h1>Professional IRCC documents,<br><em>drafted in seconds</em></h1>
+  <p class="hero-sub">Generate polished, properly structured immigration letters — the kind consultants charge $150–500 to write.</p>
+  <div class="trust-row">
+    <div class="trust-item"><div class="trust-check">✓</div>No signup required</div>
+    <div class="trust-dot"></div>
+    <div class="trust-item"><div class="trust-check">✓</div>First 3 documents free</div>
+    <div class="trust-dot"></div>
+    <div class="trust-item"><div class="trust-check">✓</div>IRCC-ready format</div>
+    <div class="trust-dot"></div>
+    <div class="trust-item"><div class="trust-check">✓</div>All provinces covered</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="upgrade-banner" id="upgradeBanner">
+    <div class="upgrade-text"><strong>You've used all 3 free documents.</strong> Upgrade for unlimited access at $12/month.</div>
+    <a class="upgrade-cta" href="#">Upgrade now →</a>
+  </div>
+
+  <div class="api-bar">
+    <div class="status-dot" id="sDot"></div>
+    <span class="api-label">API key</span>
+    <input type="password" id="apiKey" placeholder="sk-ant-api03-..." oninput="checkKey()"/>
+  </div>
+
+  <div class="doc-selector">
+    <button class="doc-btn active" onclick="switchDoc(0)">
+      <span class="doc-btn-icon">📋</span>
+      <span class="doc-btn-label">Letter of Explanation</span>
+      <span class="doc-btn-sub">LOE · Extension · Restoration</span>
+    </button>
+    <button class="doc-btn" onclick="switchDoc(1)">
+      <span class="doc-btn-icon">🎓</span>
+      <span class="doc-btn-label">Study Permit</span>
+      <span class="doc-btn-sub">Cover letter · New or renewal</span>
+    </button>
+    <button class="doc-btn" onclick="switchDoc(2)">
+      <span class="doc-btn-icon">💼</span>
+      <span class="doc-btn-label">Work Permit</span>
+      <span class="doc-btn-sub">LMIA · PGWP · Open permit</span>
+    </button>
+  </div>
+
+  <!-- LOE Form -->
+  <div id="form0">
+    <div class="form-card">
+      <div class="form-card-header"><div class="fch-dot"></div><span class="fch-title">Applicant information</span></div>
+      <div class="form-body">
+        <div class="form-grid">
+          <div class="fg"><label>Full legal name</label><input id="l_name" type="text" placeholder="As it appears on your passport"/></div>
+          <div class="fg"><label>Nationality</label><input id="l_nat" type="text" placeholder="e.g. Nigerian, Indian, Filipino"/></div>
+          <div class="fg"><label>Permit type</label>
+            <select id="l_type">
+              <option value="study permit extension">Study permit — extension</option>
+              <option value="work permit extension">Work permit — extension</option>
+              <option value="visitor visa extension">Visitor visa — extension</option>
+              <option value="restoration of status">Restoration of status</option>
+              <option value="change of conditions">Change of conditions</option>
+            </select>
+          </div>
+          <div class="fg"><label>Province</label>
+            <select id="l_prov">
+              <option>Ontario</option><option>British Columbia</option><option>Quebec</option>
+              <option>Alberta</option><option>Manitoba</option><option>Saskatchewan</option>
+              <option>Nova Scotia</option><option>New Brunswick</option><option>Other</option>
+            </select>
+          </div>
+          <div class="fg"><label>Permit expiry date</label><input id="l_exp" type="date"/></div>
+          <div class="fg"><label>Previous refusals?</label>
+            <select id="l_ref"><option value="no">No previous refusals</option><option value="yes">Yes — prior refusal</option></select>
+          </div>
+          <div class="section-divider">Your situation</div>
+          <div class="fg full"><label>Describe your situation in your own words</label>
+            <textarea id="l_sit" placeholder="e.g. I am completing my Master's in Computer Science at the University of Toronto. My thesis defence has been moved to April 2026, requiring a one-semester extension..."></textarea>
+          </div>
+          <div class="fg full"><label>Any concerns or flags to address? (optional)</label>
+            <textarea id="l_con" placeholder="e.g. I had a brief gap in enrolment last semester due to a medical issue..." style="min-height:60px"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="error-bar" id="e0">⚠ Please enter your full name, describe your situation, and add your API key above.</div>
+    <button class="generate-btn" onclick="generate(0)"><span>Generate Letter of Explanation</span><span class="btn-arrow">→</span></button>
+  </div>
+
+  <!-- Study Permit Form -->
+  <div id="form1" style="display:none">
+    <div class="form-card">
+      <div class="form-card-header"><div class="fch-dot"></div><span class="fch-title">Applicant information</span></div>
+      <div class="form-body">
+        <div class="form-grid">
+          <div class="fg"><label>Full legal name</label><input id="s_name" type="text" placeholder="As it appears on your passport"/></div>
+          <div class="fg"><label>Nationality</label><input id="s_nat" type="text" placeholder="e.g. Indian, Chinese, Brazilian"/></div>
+          <div class="fg"><label>Applying from</label>
+            <select id="s_from"><option value="inside Canada">Inside Canada (extension)</option><option value="outside Canada">Outside Canada (new application)</option></select>
+          </div>
+          <div class="fg"><label>Province of study</label>
+            <select id="s_prov">
+              <option>Ontario</option><option>British Columbia</option><option>Quebec</option>
+              <option>Alberta</option><option>Manitoba</option><option>Saskatchewan</option>
+              <option>Nova Scotia</option><option>Other</option>
+            </select>
+          </div>
+          <div class="fg full"><label>Institution and program</label><input id="s_sch" type="text" placeholder="e.g. York University — Master of Business Administration"/></div>
+          <div class="section-divider">Purpose and ties</div>
+          <div class="fg full"><label>Why do you want to study in Canada?</label>
+            <textarea id="s_why" placeholder="e.g. Canada's world-class universities and multicultural environment make it ideal for my MBA..."></textarea>
+          </div>
+          <div class="fg full"><label>Financial support and ties to home country (optional)</label>
+            <textarea id="s_ties" placeholder="e.g. My education is funded by a scholarship. My family owns a business and I intend to return after my degree..." style="min-height:60px"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="error-bar" id="e1">⚠ Please enter your name, institution, and reason for studying in Canada.</div>
+    <button class="generate-btn" onclick="generate(1)"><span>Generate Study Permit Cover Letter</span><span class="btn-arrow">→</span></button>
+  </div>
+
+  <!-- Work Permit Form -->
+  <div id="form2" style="display:none">
+    <div class="form-card">
+      <div class="form-card-header"><div class="fch-dot"></div><span class="fch-title">Applicant information</span></div>
+      <div class="form-body">
+        <div class="form-grid">
+          <div class="fg"><label>Full legal name</label><input id="w_name" type="text" placeholder="As it appears on your passport"/></div>
+          <div class="fg"><label>Nationality</label><input id="w_nat" type="text" placeholder="e.g. Mexican, Filipino, Nigerian"/></div>
+          <div class="fg"><label>Work permit type</label>
+            <select id="w_type">
+              <option value="LMIA-based work permit">LMIA-based work permit</option>
+              <option value="LMIA-exempt work permit (IMP)">LMIA-exempt — IMP</option>
+              <option value="Post-graduation work permit (PGWP)">Post-graduation (PGWP)</option>
+              <option value="intra-company transfer work permit">Intra-company transfer</option>
+              <option value="open work permit">Open work permit</option>
+            </select>
+          </div>
+          <div class="fg"><label>Province of work</label>
+            <select id="w_prov">
+              <option>Ontario</option><option>British Columbia</option><option>Quebec</option>
+              <option>Alberta</option><option>Manitoba</option><option>Saskatchewan</option>
+              <option>Nova Scotia</option><option>Other</option>
+            </select>
+          </div>
+          <div class="fg full"><label>Employer name and job title</label><input id="w_emp" type="text" placeholder="e.g. Deloitte Canada — Senior Software Engineer"/></div>
+          <div class="section-divider">Role and qualifications</div>
+          <div class="fg full"><label>Describe your role and why you are qualified</label>
+            <textarea id="w_role" placeholder="e.g. I have 6 years of backend development experience. Deloitte Canada has offered me a Senior Software Engineer position..."></textarea>
+          </div>
+          <div class="fg full"><label>Ties to home country and intent to comply (optional)</label>
+            <textarea id="w_ties" placeholder="e.g. I own property in the Philippines and have family there. I intend to comply fully with all permit conditions..." style="min-height:60px"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="error-bar" id="e2">⚠ Please enter your name, employer details, and role description.</div>
+    <button class="generate-btn" onclick="generate(2)"><span>Generate Work Permit Cover Letter</span><span class="btn-arrow">→</span></button>
+  </div>
+
+  <div class="loading-bar" id="loadingBar">
+    <div class="spinner"></div>
+    <div>
+      <div class="loading-text" id="loadTxt">Drafting your document...</div>
+      <div class="loading-step" id="loadStep">Applying IRCC formatting standards</div>
+    </div>
+  </div>
+
+  <div class="output-card" id="outputCard">
+    <div class="output-header">
+      <div class="output-status"><div class="check-circle">✓</div>Document ready</div>
+      <div class="output-actions">
+        <button class="action-btn" id="copyBtn" onclick="copyDoc()">Copy</button>
+      </div>
+    </div>
+    <div class="output-meta">
+      <span class="meta-item">Type: <strong id="metaType">—</strong></span>
+      <span class="meta-item">Province: <strong id="metaProv">—</strong></span>
+      <span class="meta-item">Generated: <strong id="metaDate">—</strong></span>
+    </div>
+    <div class="output-body">
+      <div class="output-text" id="outText"></div>
+    </div>
+    <div class="feedback-row">
+      <span class="feedback-label">Was this document helpful?</span>
+      <div class="feedback-btns">
+        <button class="fb-btn" id="fbGood" onclick="feedback(true)">👍 Yes</button>
+        <button class="fb-btn" id="fbBad" onclick="feedback(false)">👎 Needs work</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    <strong style="color:var(--gold)">Legal notice:</strong> ImmiDocs generates document templates for informational purposes only and does not constitute legal advice. Always review your document carefully before submission to IRCC. For complex situations or prior refusals, consult a licensed Regulated Canadian Immigration Consultant (RCIC).
+  </div>
+
+</div>
+
+<footer>
+  <p>ImmiDocs.ai &nbsp;·&nbsp; Not affiliated with IRCC or the Government of Canada &nbsp;·&nbsp; <a href="#">Privacy</a> &nbsp;·&nbsp; <a href="#">Terms</a></p>
+</footer>
+
+<script>
+let cur=0;
+let used=parseInt(localStorage.getItem('imd_used')||'0');
+document.getElementById('cUsed').textContent=used;
+if(used>=3)document.getElementById('upgradeBanner').classList.add('show');
+
+const docLabels=['Letter of Explanation','Study Permit Cover Letter','Work Permit Cover Letter'];
+
+const prompts=[
+  (d)=>`You are a senior Canadian immigration consultant with 15 years of experience preparing successful IRCC applications. Write a formal Letter of Explanation for a ${d.type} application.\n\nApplicant: ${d.name} | Nationality: ${d.nat} | Province: ${d.prov}\nPermit expiry: ${d.exp||'not specified'} | Previous refusals: ${d.ref}\nSituation: ${d.sit}\nAdditional concerns: ${d.con||'none'}\n\nRequirements:\n- Formal Canadian English throughout\n- Structure: City + date header, "Immigration, Refugees and Citizenship Canada" addressee, RE: line\n- Opening: clear statement of purpose\n- Body (2-3 paragraphs): explain situation, address gaps or concerns, demonstrate good standing\n- Address prior refusals honestly if applicable\n- Compliance paragraph: strong ties, intent to comply, non-immigrant intent\n- Closing: polite request for favourable consideration\n- Formal signature block for ${d.name}\n- Length: 450-550 words\n- Tone: formal, confident, honest, cooperative — never pleading\n- No bullet points. Formal paragraphs only.`,
+
+  (d)=>`You are a senior Canadian immigration consultant with 15 years of experience preparing successful IRCC applications. Write a formal Study Permit cover letter.\n\nApplicant: ${d.name} | Nationality: ${d.nat} | Province: ${d.prov}\nApplying from: ${d.from} | Institution and program: ${d.sch}\nReason for studying in Canada: ${d.why}\nFinancial support / ties: ${d.ties||'not specified'}\n\nRequirements:\n- Formal Canadian English throughout\n- Structure: City + date header, formal IRCC addressee, RE: line\n- Opening: state application purpose clearly\n- Academic paragraph: why this institution and program, career alignment\n- Canada paragraph: why Canada specifically, knowledge of institution\n- Financial and ties paragraph: proof of funds, strong home country ties, clear intent to return\n- Compliance closing: commitment to comply with permit conditions\n- Formal signature block for ${d.name}\n- Length: 420-500 words\n- Tone: enthusiastic yet professional, clearly demonstrating non-immigrant intent\n- No bullet points. Formal paragraphs only.`,
+
+  (d)=>`You are a senior Canadian immigration consultant with 15 years of experience preparing successful IRCC applications. Write a formal Work Permit cover letter.\n\nApplicant: ${d.name} | Nationality: ${d.nat} | Province: ${d.prov}\nWork permit type: ${d.type} | Employer and title: ${d.emp}\nRole and qualifications: ${d.role}\nTies to home country: ${d.ties||'not specified'}\n\nRequirements:\n- Formal Canadian English throughout\n- Structure: City + date header, formal IRCC addressee, RE: line specifying permit type\n- Opening: state purpose and permit type\n- Employer paragraph: describe the Canadian employer, role offered, start date\n- Qualifications paragraph: applicant's experience, education, why uniquely qualified\n- Compliance paragraph: intent to comply with conditions, ties to home country, commitment to depart upon expiry\n- Closing: polite request for favourable consideration\n- Formal signature block for ${d.name}\n- Length: 420-500 words\n- Tone: confident, professional, cooperative\n- No bullet points. Formal paragraphs only.`
+];
+
+function getData(i){
+  if(i===0)return{name:document.getElementById('l_name').value.trim(),nat:document.getElementById('l_nat').value.trim(),type:document.getElementById('l_type').value,prov:document.getElementById('l_prov').value,exp:document.getElementById('l_exp').value,ref:document.getElementById('l_ref').value,sit:document.getElementById('l_sit').value.trim(),con:document.getElementById('l_con').value.trim()};
+  if(i===1)return{name:document.getElementById('s_name').value.trim(),nat:document.getElementById('s_nat').value.trim(),from:document.getElementById('s_from').value,prov:document.getElementById('s_prov').value,sch:document.getElementById('s_sch').value.trim(),why:document.getElementById('s_why').value.trim(),ties:document.getElementById('s_ties').value.trim()};
+  return{name:document.getElementById('w_name').value.trim(),nat:document.getElementById('w_nat').value.trim(),type:document.getElementById('w_type').value,prov:document.getElementById('w_prov').value,emp:document.getElementById('w_emp').value.trim(),role:document.getElementById('w_role').value.trim(),ties:document.getElementById('w_ties').value.trim()};
+}
+
+function validate(i,d){
+  if(i===0)return d.name&&d.sit;
+  if(i===1)return d.name&&d.sch&&d.why;
+  return d.name&&d.emp&&d.role;
+}
+
+function checkKey(){
+  const k=document.getElementById('apiKey').value.trim();
+  document.getElementById('sDot').className='status-dot'+(k.startsWith('sk-ant-')?' live':'');
+}
+
+function switchDoc(i){
+  document.getElementById('form'+cur).style.display='none';
+  document.getElementById('form'+i).style.display='block';
+  document.querySelectorAll('.doc-btn').forEach((b,idx)=>b.className='doc-btn'+(idx===i?' active':''));
+  document.getElementById('outputCard').className='output-card';
+  document.getElementById('loadingBar').className='loading-bar';
+  cur=i;
+}
+
+async function generate(i){
+  const apiKey=document.getElementById('apiKey').value.trim();
+  const d=getData(i);
+  const errEl=document.getElementById('e'+i);
+  if(!apiKey||!validate(i,d)){errEl.classList.add('show');return;}
+  errEl.classList.remove('show');
+  if(used>=3){document.getElementById('upgradeBanner').classList.add('show');return;}
+  document.getElementById('outputCard').className='output-card';
+  document.getElementById('loadingBar').className='loading-bar show';
+  document.querySelectorAll('.generate-btn').forEach(b=>b.disabled=true);
+  const steps=[['Drafting your document...','Structuring opening paragraphs'],['Writing body sections...','Applying IRCC formatting standards'],['Reviewing for completeness...','Checking compliance language'],['Finalising document...','Adding formal closing and signature block']];
+  let si=0;
+  const iv=setInterval(()=>{si=(si+1)%steps.length;document.getElementById('loadTxt').textContent=steps[si][0];document.getElementById('loadStep').textContent=steps[si][1];},2500);
+  try{
+    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({apiKey,prompt:prompts[i](d)})});
+    const data=await res.json();
+    clearInterval(iv);
+    if(data.error)throw new Error(data.error);
+    document.getElementById('outText').textContent=data.text;
+    document.getElementById('metaType').textContent=docLabels[i];
+    document.getElementById('metaProv').textContent=d.prov||'—';
+    document.getElementById('metaDate').textContent=new Date().toLocaleDateString('en-CA');
+    document.getElementById('outputCard').className='output-card show';
+    document.getElementById('loadingBar').className='loading-bar';
+    used++;localStorage.setItem('imd_used',used);
+    document.getElementById('cUsed').textContent=used;
+    if(used>=3)document.getElementById('upgradeBanner').classList.add('show');
+    document.getElementById('fbGood').className='fb-btn';
+    document.getElementById('fbBad').className='fb-btn';
+  }catch(err){
+    clearInterval(iv);
+    document.getElementById('loadingBar').className='loading-bar';
+    document.getElementById('outText').textContent='Error: '+err.message;
+    document.getElementById('outputCard').className='output-card show';
+  }
+  document.querySelectorAll('.generate-btn').forEach(b=>b.disabled=false);
+}
+
+function copyDoc(){
+  navigator.clipboard.writeText(document.getElementById('outText').textContent).then(()=>{
+    const b=document.getElementById('copyBtn');b.textContent='Copied!';setTimeout(()=>b.textContent='Copy',2000);
+  });
+}
+
+function feedback(good){
+  document.getElementById('fbGood').className='fb-btn'+(good?' good':'');
+  document.getElementById('fbBad').className='fb-btn'+(!good?' bad':'');
+}
+</script>
+</body>
+</html>
